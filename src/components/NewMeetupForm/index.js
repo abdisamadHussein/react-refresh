@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { useFormik } from "formik";
+import * as yup from "yup";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Control = styled.div` 
   margin-bottom: 0.5rem;
@@ -47,6 +50,30 @@ const Card = styled.div`
   padding: 1rem;
 `;
 
+const ErrorMessage = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  padding: 1px;
+  font-size: 0.8rem;
+  font-weight: 400;
+  border-radius: 3px 3px 3px 3px;
+  color: #d8000c;
+  background-color: #ffbaba;
+`;
+
+let ValidationSchema = yup.object().shape({
+  meetupTitle: yup.string().required("required title"),
+  meetupImage: yup
+    .string()
+    .required("required url image")
+    .matches(
+      /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+      "Enter correct url!"
+    ),
+  address: yup.string().required("required address"),
+  description: yup.string().required("required description"),
+});
 const Index = ({ onAddMeetup }) => {
   const formik = useFormik({
     initialValues: {
@@ -55,8 +82,10 @@ const Index = ({ onAddMeetup }) => {
       address: "",
       description: "",
     },
+    validationSchema: ValidationSchema,
 
     onSubmit: (values) => {
+      // alert(JSON.stringify(values, null, 2));
       onAddMeetup(values);
     },
   });
@@ -70,8 +99,18 @@ const Index = ({ onAddMeetup }) => {
             name="meetupTitle"
             type="text"
             onChange={formik.handleChange}
+            touched={formik.touched.meetupTitle}
             value={formik.values.meetupTitle}
           />
+          {formik.errors.meetupTitle && formik.touched.meetupTitle ? (
+            <ErrorMessage>
+              <FontAwesomeIcon
+                style={{ margin: "0.5rem" }}
+                icon={faTimesCircle}
+              />
+              {formik.errors.meetupTitle}
+            </ErrorMessage>
+          ) : null}
         </Control>
         <Control>
           <label htmlFor="MeetupImage">MeetUp Image </label>
@@ -80,8 +119,18 @@ const Index = ({ onAddMeetup }) => {
             name="meetupImage"
             type="url"
             onChange={formik.handleChange}
+            touched={formik.touched.meetupImage}
             value={formik.values.meetupImage}
           />
+          {formik.errors.meetupImage && formik.touched.meetupImage ? (
+            <ErrorMessage>
+              <FontAwesomeIcon
+                style={{ margin: "0.5rem" }}
+                icon={faTimesCircle}
+              />
+              {formik.errors.meetupImage}
+            </ErrorMessage>
+          ) : null}
         </Control>
         <Control>
           <label htmlFor="Address">Address </label>
@@ -92,6 +141,15 @@ const Index = ({ onAddMeetup }) => {
             onChange={formik.handleChange}
             value={formik.values.address}
           />
+          {formik.errors.address && formik.touched.address ? (
+            <ErrorMessage>
+              <FontAwesomeIcon
+                style={{ margin: "0.5rem" }}
+                icon={faTimesCircle}
+              />
+              {formik.errors.address}
+            </ErrorMessage>
+          ) : null}
         </Control>
 
         <Control>
@@ -103,6 +161,15 @@ const Index = ({ onAddMeetup }) => {
             onChange={formik.handleChange}
             value={formik.values.description}
           />
+          {formik.errors.description && formik.touched.description ? (
+            <ErrorMessage>
+              <FontAwesomeIcon
+                style={{ margin: "0.5rem" }}
+                icon={faTimesCircle}
+              />
+              {formik.errors.description}
+            </ErrorMessage>
+          ) : null}
         </Control>
         <Action>
           <button type="submit">Add Meetup</button>
